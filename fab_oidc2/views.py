@@ -17,6 +17,7 @@ ENABLE_ROLE_OIDC_ACCESS = os.getenv('ENABLE_ROLE_OIDC_ACCESS',
                                     default='True')
 ROLES_OIDC_FIELD = os.getenv('ROLES_OIDC_FIELD',
                              default='roles')
+ENABLE_DEFAULT_READONLY_ACCESS = os.getenv('ENABLE_DEFAULT_READONLY_ACCESS',default=False)
 
 
 class AuthOIDCView(AuthOIDView):
@@ -36,6 +37,12 @@ class AuthOIDCView(AuthOIDView):
             
             # Iterate through each role, and check if its available.
             assign_roles = []
+
+            # enable default viewer role if no role is assigned
+            if ENABLE_DEFAULT_READONLY_ACCESS==True:
+                viewer_role = sm.find_role('Viewer')
+                assign_roles.append(viewer_role)
+
             if ENABLE_ROLE_OIDC_ACCESS.lower() in ['true']:
                 if user_roles:
                     if isinstance(user_roles, str):
